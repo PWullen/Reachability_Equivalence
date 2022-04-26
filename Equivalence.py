@@ -10,10 +10,10 @@ def Wullen_Equivalence(a, b, c, d):
     S = b
     delta = c
     lmda = d
-    State_Eqivalence(X, S, delta, lmda)
+    State_Equivalence(X, S, delta, lmda)
 
 
-def State_Eqivalence(X, S, delta, lmda):
+def State_Equivalence(X, S, delta, lmda):
     """transfered from the lecture notes
        X =
        S =
@@ -66,7 +66,7 @@ def Refine(a, b):  #clearly incorrect, also dummy eq for now
 
 
 def union(a, b):  #simplified, dummy eq will be refined later
-    ans = a&b
+    ans = a|b
     yield ans
 
 
