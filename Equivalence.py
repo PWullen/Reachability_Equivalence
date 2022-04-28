@@ -1,76 +1,41 @@
 # equivalence
 """Using PyEDA, write a program in Python that takes as input the specification of two sequential circuits
 and determines whether they are equivalent, when is each is started in its own initial state (all FFs have 0)"""
-import numpy as np
 from pyeda.inter import *
+import os
+import blifparser.blifparser as blifparser
 
-def Wullen_Equivalence(a, b, c, d):
-    print("Running equivalence")
-    X = a
-    S = b
-    delta = c
-    lmda = d
-    State_Equivalence(X, S, delta, lmda)
+from ReachableStates import cofactors
 
 
-def State_Equivalence(X, S, delta, lmda):
-    """transfered from the lecture notes
-       X =
-       S =
-       delta =
-       lmda = """
-    P0 = set(B0,B1)
-    S = set(B0,B1)
-    P1 = P0
-    for x in X:
-        for s.j in S and o.xj in lmda(sj, x):
-            P1x = Partition(ox, B01)
-            P1 = Refine(P1, P1x)
-            if Independent(lmda, x) == True:
-                break
-    if P1 == P0:
-        return P0, 0
-    for k in range(0, len(S)):
-        Pk = {}
-        for Bi in P.k-1:
-            P.ik = B.i
-            for x in X:
-                for s.j in B.i
-                    t.xj = delta(s.j, x)
-                    b.x = block_index(t.x, P.k-1)
-                    Pb.xi = Partition(b.x, B.i)
-                    P.ik = Refine(P.ik, Pb.xi)
-                P.k = union(P.k, P.ik)
-        if P.k = P.k-1:
-            return P.k, k-1
-
-
-#dependent equations for State_Equivalence
-def Independent(a, b): #clearly incorrect, just dummy eq for now
-    if a != b:
-        yield True
-    else:
-        yield False
-
-
-def Partition(a, b):  #clearly incorrect, also dummy eq for now
-    a = function.component
-    b = function
-    yield(a, b)
-
-
-def Refine(a, b):  #clearly incorrect, also dummy eq for now
-    a = function
-    b = function
-    yield(a, b)
-
-
-def union(a, b):  #simplified, dummy eq will be refined later
-    ans = a|b
-    yield ans
-
-
-def block_index(a, b):  #clearly incorrect but dummy func to stand in
-    a = function
-    b = index(a)
-    yield a.b
+def Wullen_Equivalence():
+    # get the file path and pass it to the parser
+    filepath = os.path.abspath("Equivalence.py")
+    parser = blifparser.BlifParser(filepath)
+    # get the object that contains the parsed data
+    # from the parser
+    blif = parser.blif
+    # init FSMs
+    y1, y2, y3, Y1, Y2, Y3, x = map(exprvar, 'abcABCx')
+    y1 = Or(And(~x, Y1), Y3)
+    y2 = And(x, Y1)
+    y3 = y2
+    FSMa = And(y1, y2, y3)
+    TTa = expr2truthtable(FSMa)
+    z1, z2, Z1, Z2, v = map(exprvar, 'abABx')
+    z1 = And(v, Or(~Z1, ~Z2))
+    z2 = z1
+    FSMb = And(z1, z2)
+    TTb = expr2truthtable(FSMb)
+    print("FSM from circuit a")
+    print(TTa)
+    print("FSM from circuit b")
+    print(TTb)
+    ProductMachine = Xor(FSMa, FSMb)
+    TTP = expr2truthtable(ProductMachine)
+    Fs = cofactors(ProductMachine, (x, v, Y1, Y2, Y3, Z1, Z2))
+    print(TTP)
+    print(ProductMachine)
+    print(Fs)
+    # get the list of boolean functions (.names)
+    #print(blif.fsm.i)
