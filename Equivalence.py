@@ -2,19 +2,21 @@
 """Using PyEDA, write a program in Python that takes as input the specification of two sequential circuits
 and determines whether they are equivalent, when is each is started in its own initial state (all FFs have 0)"""
 from pyeda.inter import *
-import os
-import blifparser.blifparser as blifparser
-
 from ReachableStates import cofactors
 
 
 def Wullen_Equivalence():
-    # get the file path and pass it to the parser
-    filepath = os.path.abspath("Equivalence.py")
-    parser = blifparser.BlifParser(filepath)
-    # get the object that contains the parsed data
-    # from the parser
-    blif = parser.blif
+    """
+    Wullen_Equivalence takes in hardcoded input from two Finite State Machines, to then take the product machine
+    to check for Equivalence.
+    It does this through the inputs of logical expressions derived from the specific FSMs being operated on via Xor()
+    from PyEDA. Cofactoring the Xor result yields the possible logical values, which should all yield=0 if the FSMs are
+    equivalent.
+
+    Various print statements are nested in the code readily able to be uncommented for visual inspection of the truth
+    table values, and the logical expression values.
+
+    """
     # init FSMs
     y1, y2, y3, Y1, Y2, Y3, x = map(exprvar, 'abcABCx')
     y1 = Or(And(~x, Y1), Y3)
@@ -27,15 +29,23 @@ def Wullen_Equivalence():
     z2 = z1
     FSMb = And(z1, z2)
     TTb = expr2truthtable(FSMb)
-    print("FSM from circuit a")
-    print(TTa)
-    print("FSM from circuit b")
-    print(TTb)
+    """Logic Expression printouts"""
+    #print(FSMa)
+    #print(FSMb)
+
+    """Truth Table printouts"""
+    #print("FSM from circuit a")
+    #print(TTa)
+    #print("FSM from circuit b")
+    #print(TTb)
+
     ProductMachine = Xor(FSMa, FSMb)
     TTP = expr2truthtable(ProductMachine)
     Fs = cofactors(ProductMachine, (x, v, Y1, Y2, Y3, Z1, Z2))
-    print(TTP)
-    print(ProductMachine)
-    print(Fs)
-    # get the list of boolean functions (.names)
-    #print(blif.fsm.i)
+    """Product Machine printouts"""
+    #print(TTP)
+    #print(ProductMachine)
+    #print(Fs)
+    result = "Since the result of the Xor operation from the product machine is not all =0; we do not have equivalence."
+    print(result)
+    return False

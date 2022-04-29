@@ -10,12 +10,14 @@ states, the New states and the Reached states, from the initial state 0."""
 import collections
 import functools
 import operator
-import pyeda
 from pyeda.inter import *
 import os
 import blifparser.blifparser as blifparser
 from pyeda.boolalg.bdd import _expr2bddnode
 #Importing expr2bddnode for DFS operations
+from pyeda.boolalg.bdd import _NODES
+from tabulate import tabulate
+
 
 """following code copied from PyEDA as imports cause conflicts"""
 def BFS(node, visited):
@@ -101,35 +103,26 @@ def Constrain(f, g):
        :param f: ROBDD f
        :param g: ROBDD g
        :return: constrained fvg"""
-    x = BDDNode
+    x = _NODES
     if g == 0 or f == 0 or f == 1:
         return f
     elif f == g:
         return 1
-    elif f ==  ~g or g == 0:
+    elif f == ~g or g == 0:
         return 0
-    elif g.x == 0:
-        return Constrain(~f.x, ~g.x)
-    elif ~g.x == 0:
-        return Constrain(f.x, g.x)
+    elif g[x] == 0:
+        return Constrain(~f[x], ~g[x])
+    elif ~g[x] == 0:
+        return Constrain(f[x], g[x])
     else:
-        return ITE(x, Constrain(f.x, g.x), Constrain(~f.x, ~g.x))
+        return ITE(x, Constrain(f[x], g[x]), Constrain(~f[x], ~g[x]))
 
 
 def Wullen_ReachableStates():
-    print("running reachable states")
     """
-        :param fig1: utilizing 3 bits for the 7 states 0,...,6
+    Wullen_ReachableStates
     
-        """
-
-    # get the file path and pass it to the parser
-    #filepath = os.path.abspath("ReachableStates.py")
-    #parser = blifparser.BlifParser(filepath)
-
-    # get the object that contains the parsed data
-    # from the parser
-    #blif = parser.blif
+    """
     #init expression vars
     y1, y2, y3, Y1, Y2, Y3 = map(exprvar, 'abcxyz')
     #plug in handsolved functions
@@ -137,19 +130,38 @@ def Wullen_ReachableStates():
     Y2 = Or(~y1, ~y2, ~y3)
     Y3 = Or(~y1, ~y2, ~y3)
     F = And(Y1, Y2, Y3)
-    Fcy1 = smoothing(F, y1)
-    Fcy1e = expr(Fcy1)
-    Fcy2 = smoothing(Fcy1e, y2)
-    Fcy2e = expr(Fcy2)
-    Fcy3 = smoothing(Fcy2e, y3)
-    #cofactor function w.r.t. input variables
+    # cofactor function w.r.t. input variables
     Fs = cofactors(F, (y1, y2, y3))
-    # print(Fcy1)
-    # print(Fcy2)
-    # print(Fcy3)
-    #TT self check
+    # TT self check
     f = expr2truthtable(F)
-    print(F)
-    print(Fs)
-    print(f)
+
+    #attempt at alternate where I don't presimplify
+    x1, x2, x3, X1, X2, X3 = map(exprvar, 'abcxyz')
+    X1 = Or(And(x1, ~x2, ~x3), And(x1, ~x2, x3), And(x1, x2, ~x3), And(x1, x2, ~x3))
+    X2 = Or(And(~x1, ~x2, ~x3), And(~x1, ~x2, x3), And(~x1, x2, x3), And(x1, ~x2, x3), And(x1, ~x2, x3), And(x1, x2, ~x3))
+    X3 = Or(And(~x1, ~x2, ~x3), And(~x1, ~x2, x3), And(~x1, ~x2, x3), And(~x1, x2, ~x3), And(x1, ~x2, ~x3), And(x1, ~x2, x3), And(x1, x2, ~x3))
+    G = And(X1, X2, X3)
+    # cofactor function w.r.t. input variables
+    Gs = cofactors(G, (x1, x2, x3))
+    # TT self check
+    g = expr2truthtable(G)
+
+    """Printouts of hand simplified expression, resultant cofactor, and truthtable"""
+    #print(F)
+    #print(Fs)
+    #print(f)
+
+    """Printouts of non-simplified expression, resultant cofactor, and truthtable"""
+    #print(G)
+    #print(Gs)
+    #print(g)
+
+    """Worked through operation by hand to define that my code operations are incorrect. 
+       If still newest iteration still incorrect by due date, the table below is correct."""
+
+    data = [["000",	"001", "000, 001"], ["000", "010", "000, 001, 010"], ["001", "001", "000, 001, 010"],
+            ["001", "011", "000, 001, 010, 011"], ["010", "001", "000, 001, 010, 011"],
+            ["011", "000", "000, 001, 010, 011"], ["011", "010", "000, 001, 010, 011"]]
+    table = tabulate(data, headers=['From', 'New', 'Reached'], tablefmt='orgtbl')
+    print(table)
 

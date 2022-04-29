@@ -5,7 +5,8 @@ from Equivalence import Wullen_Equivalence
 def testdebug():
     print('Testing ReachableStates.py\n')
     Wullen_ReachableStates()
-    print("Testing Equivalence")
+    print()
+    print("Testing Equivalence\n")
     Wullen_Equivalence()
 
 
