@@ -8,7 +8,7 @@ def testdebug():
     print()
     print("Testing Equivalence\n")
     Wullen_Equivalence()
-
+    
 
 if __name__ == '__main__':
     testdebug()
