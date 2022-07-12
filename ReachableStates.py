@@ -18,7 +18,6 @@ from pyeda.boolalg.bdd import _expr2bddnode
 from pyeda.boolalg.bdd import _NODES
 from tabulate import tabulate
 
-
 """following code copied from PyEDA as imports cause conflicts"""
 def BFS(node, visited):
     """
@@ -92,8 +91,6 @@ def cofactors(self, vs=None):
     :math:`f_{x_i'} = f(x_1, x_2, \dots, 0, \dots, x_n)`
     """
     return tuple(cf for cf in self.iter_cofactors(vs))
-
-
 """end of PyEDA source copy"""
 
 
