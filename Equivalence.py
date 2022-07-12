@@ -4,7 +4,6 @@ and determines whether they are equivalent, when is each is started in its own i
 from pyeda.inter import *
 from ReachableStates import cofactors
 
-
 def Wullen_Equivalence():
     """
     Wullen_Equivalence takes in hardcoded input from two Finite State Machines, to then take the product machine
